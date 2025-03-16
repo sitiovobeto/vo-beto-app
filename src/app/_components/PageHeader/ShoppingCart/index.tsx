@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { ShoppingBasketIcon as Basket, X } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,45 +13,14 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-
-const initialCartItems = [
-  {
-    id: 1,
-    name: "Wireless Headphones",
-    price: 129.99,
-    quantity: 1,
-    image: "/placeholder.svg?height=80&width=80",
-  },
-  {
-    id: 2,
-    name: "Smart Watch",
-    price: 199.99,
-    quantity: 1,
-    image: "/placeholder.svg?height=80&width=80",
-  },
-];
+import { useCartStore } from "@/hooks/store/cart";
+import { NumberHelper } from "@/utils";
 
 export function ShoppingCart() {
-  const [cartItems, setCartItems] = useState(initialCartItems);
+  const { cart, removeFromCart, updateQuantity, calculatePriceTotal } =
+    useCartStore();
 
-  const removeFromCart = (id: number) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
-  };
-
-  const updateQuantity = (id: number, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
-
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <Sheet>
@@ -77,7 +44,7 @@ export function ShoppingCart() {
         </SheetHeader>
 
         <div className="mt-8 flex flex-col gap-4">
-          {cartItems.length === 0 ? (
+          {cart.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Basket className="h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium text-deepMocha">
@@ -89,7 +56,7 @@ export function ShoppingCart() {
             </div>
           ) : (
             <>
-              {cartItems.map((item) => (
+              {cart.map((item) => (
                 <div key={item.id} className="flex items-center gap-4">
                   <div className="relative h-20 w-20 overflow-hidden rounded-md">
                     <Image
@@ -102,7 +69,7 @@ export function ShoppingCart() {
                   <div className="flex-1">
                     <h3 className="font-medium text-deepMocha">{item.name}</h3>
                     <p className="text-sm text-deepMochad">
-                      R${item.price.toFixed(2)}
+                      {NumberHelper.formatCurrency(item.price)}
                     </p>
                     <div className="mt-1 flex items-center gap-2">
                       <Button
@@ -110,7 +77,7 @@ export function ShoppingCart() {
                         size="icon"
                         className="h-6 w-6"
                         onClick={() =>
-                          updateQuantity(item.id, item.quantity - 1)
+                          updateQuantity(Number(item.id), item.quantity - 1)
                         }
                       >
                         -
@@ -123,7 +90,7 @@ export function ShoppingCart() {
                         size="icon"
                         className="h-6 w-6"
                         onClick={() =>
-                          updateQuantity(item.id, item.quantity + 1)
+                          updateQuantity(Number(item.id), item.quantity + 1)
                         }
                       >
                         +
@@ -145,7 +112,7 @@ export function ShoppingCart() {
               <div className="flex items-center justify-between">
                 <span className="font-medium text-deepMocha">Total</span>
                 <span className="font-bold text-deepMocha">
-                  R${totalPrice.toFixed(2)}
+                  {calculatePriceTotal()}
                 </span>
               </div>
 

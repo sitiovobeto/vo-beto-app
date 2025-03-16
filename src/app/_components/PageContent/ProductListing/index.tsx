@@ -19,13 +19,27 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Filter, ShoppingCart } from "lucide-react";
+import { useCartStore } from "@/hooks/store/cart";
 
-const sampleProducts = [
+type Product = {
+  id: string;
+  name: string;
+  category: string;
+  price: string;
+  description: string;
+  image: string;
+  inStock: boolean;
+  featured: boolean;
+  unitMeasure: string;
+};
+
+const sampleProducts: Product[] = [
   {
     id: "1",
     name: "Filé de Tilápia",
     category: "Peixes",
-    price: "R$ 35,90/kg",
+    price: "R$ 35,90",
+    unitMeasure: "kg",
     description: "Filé fresco de tilápia, limpo e sem espinhas",
     image: "/images/fish_fillet.jpg",
     inStock: true,
@@ -35,7 +49,8 @@ const sampleProducts = [
     id: "2",
     name: "Peixe Vivo - Tilápia",
     category: "Peixes",
-    price: "R$ 12,00/kg",
+    price: "R$ 12,00",
+    unitMeasure: "kg",
     description: "Tilápia viva para criação ou consumo",
     image: "/images/live_fish.jpg",
     inStock: true,
@@ -45,7 +60,8 @@ const sampleProducts = [
     id: "3",
     name: "Galinha Caipira",
     category: "Galinha Caipira",
-    price: "R$ 45,00/unidade",
+    price: "R$ 45,00",
+    unitMeasure: "unidade",
     description: "Galinha caipira criada solta, alimentação natural",
     image: "/images/free_range_chicken.jpg",
     inStock: true,
@@ -55,7 +71,8 @@ const sampleProducts = [
     id: "4",
     name: "Ovos Caipira",
     category: "Galinha Caipira",
-    price: "R$ 14,00/dúzia",
+    price: "R$ 14,00",
+    unitMeasure: "dúzia",
     description: "Ovos frescos de galinhas criadas em ambiente natural",
     image: "/images/free_range_eggs.jpg",
     inStock: true,
@@ -65,7 +82,8 @@ const sampleProducts = [
     id: "5",
     name: "Codorna Viva",
     category: "Codornas",
-    price: "R$ 10,00/unidade",
+    price: "R$ 10,00",
+    unitMeasure: "unidade",
     description: "Codorna viva para criação ou consumo",
     image: "/images/live_quail.jpg",
     inStock: true,
@@ -75,7 +93,8 @@ const sampleProducts = [
     id: "6",
     name: "Ovos de Codorna",
     category: "Codornas",
-    price: "R$ 9,00/bandeja",
+    price: "R$ 9,00",
+    unitMeasure: "bandeja",
     description: "Bandeja com 30 ovos de codorna frescos",
     image: "/images/quail_eggs.jpg",
     inStock: true,
@@ -86,6 +105,7 @@ const sampleProducts = [
     name: "Adubo Orgânico",
     category: "Insumos",
     price: "R$ 5,00/kg",
+    unitMeasure: "kg",
     description: "Adubo orgânico para hortas e jardins - Esterco bovino seco",
     image: "/images/organic_fertilizer.jpg",
     inStock: true,
@@ -96,6 +116,8 @@ const sampleProducts = [
 export default function ProductListing({ category = "all" }) {
   const [filter, setFilter] = useState("all");
   const [sort, setSort] = useState("featured");
+
+  const addToCart = useCartStore((state) => state.addToCart);
 
   const filteredProducts = sampleProducts
     .filter((product) => category === "all" || product.category === category)
@@ -117,6 +139,16 @@ export default function ProductListing({ category = "all" }) {
       }
       return 0;
     });
+
+  const handleAddToCart = (product: Product) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      image: product.image,
+    });
+  };
 
   return (
     <section className="w-full py-8 bg-background">
@@ -206,6 +238,7 @@ export default function ProductListing({ category = "all" }) {
                   size="sm"
                   disabled={!product.inStock}
                   className="flex items-center gap-1 bg-emeraldTeal hover:bg-opacity-80"
+                  onClick={() => handleAddToCart(product)}
                 >
                   <ShoppingCart className="h-4 w-4" />
                   <span className="sr-only sm:not-sr-only sm:inline-block">
