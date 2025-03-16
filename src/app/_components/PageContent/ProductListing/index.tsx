@@ -81,6 +81,16 @@ const sampleProducts = [
     inStock: true,
     featured: true,
   },
+  {
+    id: "7",
+    name: "Adubo Orgânico",
+    category: "Insumos",
+    price: "R$ 5,00/kg",
+    description: "Adubo orgânico para hortas e jardins - Esterco bovino seco",
+    image: "/images/organic_fertilizer.jpg",
+    inStock: true,
+    featured: true,
+  },
 ];
 
 export default function ProductListing({ category = "all" }) {
