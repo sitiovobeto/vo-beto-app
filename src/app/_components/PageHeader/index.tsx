@@ -11,7 +11,7 @@ export const PageHeader = () => {
         <DeliveryZones />
       </div>
 
-      <div className="w-full md:w-3/6">
+      <div className="w-full md:w-3/6 md:flex md:justify-start flex justify-center">
         <SearchInput />
       </div>
 
